@@ -9,6 +9,7 @@
 #
 import json
 import dataclasses as dc
+import io
 from io import IOBase, TextIOBase
 from collections.abc import Iterator
 from functools import partial
@@ -140,6 +141,32 @@ def get_lazy_json_encoder(errors: list[XMLSchemaValidationError]) -> type[json.J
             return json.JSONEncoder.default(self, obj)
 
     return JSONLazyEncoder
+
+
+def _stream_lazy_to_json(source: 'XMLResource', schema: 'XMLSchemaBase',
+                         fp: IO[str], validation: str,
+                         json_options: dict[str, Any],
+                         kwargs: Any) -> None:
+    """
+    Decode a lazy XML resource straight into *fp* with a bounded-memory
+    streaming decoder. Used by :func:`to_json` for lazy resources without a
+    *path* selector.
+    """
+    from xmlschema.converters.streaming import get_json_sink
+    from xmlschema.converters.streaming_decoder import StreamingJsonDecoder
+    from xmlschema.validators.validation import DecodeContext
+
+    decode_kwargs = dict(kwargs)
+    decode_kwargs['source'] = source
+    decode_kwargs['converter'] = schema.maps.settings.get_converter(
+        **decode_kwargs
+    )
+    context = DecodeContext(**decode_kwargs)
+
+    sink = get_json_sink(context.converter, fp, json_options)
+    decoder = StreamingJsonDecoder(schema, source, context, sink, validation)
+    decoder.run()
+    kwargs['_streamed_errors'] = context.errors
 
 
 def validate(xml_document: Union[XMLSourceType, XMLResource],
@@ -353,7 +380,32 @@ def to_json(xml_document: Union[XMLSourceType, XMLResource],
 
     errors: list[XMLSchemaValidationError] = []
 
-    if path is None and source.is_lazy() and 'cls' not in json_options:
+    if path is None and source.is_lazy():
+        # Bounded-memory streaming path: JSON fragments are written straight
+        # to *fp* (or to an internal buffer when no fp is provided) without
+        # building the full decoded document. The old generator-based lazy
+        # encoder is retained when a custom JSON encoder hook ('cls' or
+        # 'default') is provided, since those callers rely on its
+        # Iterator-aware default handling.
+        if 'cls' not in json_options and 'default' not in json_options:
+            if fp is None:
+                buffer = io.StringIO()
+                _stream_lazy_to_json(source, _schema, buffer, validation,
+                                     json_options, kwargs)
+                result_text = buffer.getvalue()
+                streamed_errors = kwargs.pop('_streamed_errors')
+                errors.extend(streamed_errors)
+            else:
+                _stream_lazy_to_json(source, _schema, fp, validation,
+                                     json_options, kwargs)
+                streamed_errors = kwargs.pop('_streamed_errors')
+                errors.extend(streamed_errors)
+                return None if not errors else tuple(errors)
+
+            if validation == 'lax':
+                return result_text, tuple(errors)
+            return result_text if not errors else (result_text, tuple(errors))
+
         json_options['cls'] = get_lazy_json_encoder(errors)
 
     obj = _schema.decode(source, path=path, **kwargs)

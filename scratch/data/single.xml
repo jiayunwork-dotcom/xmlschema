@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://example.com/catalog" version="1.0">
+  <item id="only-one">
+    <code>42</code>
+    <name>Solo</name>
+    <price>99.99</price>
+    <in_stock>true</in_stock>
+  </item>
+</catalog>

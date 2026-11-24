@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://example.com/catalog" version="1.0">
+  <item id="a1">
+    <code>1</code>
+    <name>Alpha</name>
+    <price>10.50</price>
+    <in_stock>true</in_stock>
+    <tag>red</tag>
+    <tag>small</tag>
+  </item>
+  <item id="a2">
+    <code>2</code>
+    <name>Beta</name>
+    <price>22.00</price>
+    <tag>blue</tag>
+  </item>
+  <item id="a3">
+    <code>3</code>
+    <name>Gamma</name>
+    <price>3.75</price>
+    <in_stock>false</in_stock>
+  </item>
+</catalog>

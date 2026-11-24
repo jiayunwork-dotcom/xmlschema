@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc xmlns="http://example.com/interleave">
+  <header>start</header>
+  <a id="x1"><k>1</k><v>one</v></a>
+  <b>between</b>
+  <a id="x2"><k>2</k><v>two</v></a>
+  <b>also between</b>
+  <a id="x3"><k>3</k><v>three</v></a>
+  <footer>end</footer>
+</doc>

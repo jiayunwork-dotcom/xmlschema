@@ -2,6 +2,19 @@
 CHANGELOG
 *********
 
+Unreleased
+==========
+* Bounded-memory streaming JSON decoding for lazy `XMLResource` in `to_json()`:
+  a new push decoder (`xmlschema.converters.streaming_decoder`) paired with one
+  streaming sink per supported converter (`XMLSchemaConverter`,
+  `ParkerConverter`, `BadgerFishConverter`, `ColumnarConverter`, `JsonMLConverter`)
+  writes JSON incrementally during a single iterparse pass. Peak memory is
+  independent of the number of records for a single repeating content model;
+  the output of lazy `to_json(lazy=1|2)` now matches a full load for continuous
+  repetitions, single occurrences, separated same-name elements and nested
+  repeating groups. The previous generator-based lazy encoder is retained when a
+  custom JSON encoder *cls* or *default* is provided through *json_options*.
+
 `v4.2.0`_ (2025-10-14)
 ======================
 * Add arguments validation for schemas and validation methods (by validation contexts)

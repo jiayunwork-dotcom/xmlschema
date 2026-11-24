@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ns="http://example.com/interleave"
+           targetNamespace="http://example.com/interleave"
+           elementFormDefault="qualified">
+
+  <xs:element name="doc" type="ns:docType"/>
+
+  <xs:complexType name="docType">
+    <xs:sequence>
+      <xs:element name="header" type="xs:string" minOccurs="0"/>
+      <xs:group ref="ns:mixedGroup" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="footer" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:group name="mixedGroup">
+    <xs:choice>
+      <xs:element name="a" type="ns:aType"/>
+      <xs:element name="b" type="xs:string"/>
+      <xs:element name="group" type="ns:nestedGroupType"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:complexType name="aType">
+    <xs:sequence>
+      <xs:element name="k" type="xs:integer"/>
+      <xs:element name="v" type="xs:string"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="nestedGroupType">
+    <xs:sequence>
+      <xs:element name="entry" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

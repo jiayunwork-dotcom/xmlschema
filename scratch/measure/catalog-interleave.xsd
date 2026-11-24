@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ns="http://example.com/catalog"
+           targetNamespace="http://example.com/catalog"
+           elementFormDefault="qualified">
+  <xs:element name="catalog" type="ns:catalogType"/>
+  <xs:complexType name="catalogType">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="item" type="ns:itemType"/>
+        <xs:element name="separator">
+          <xs:complexType>
+            <xs:attribute name="n" type="xs:integer"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="itemType">
+    <xs:sequence>
+      <xs:element name="code" type="xs:integer"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="price" type="xs:decimal"/>
+      <xs:element name="in_stock" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="tag" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:schema>

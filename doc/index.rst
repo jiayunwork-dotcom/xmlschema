@@ -7,6 +7,7 @@ xmlschema Documentation
     intro
     usage
     features
+    lazy_streaming
     converters
     components
     testing
